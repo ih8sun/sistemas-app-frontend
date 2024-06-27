@@ -1,11 +1,41 @@
-"use client"
+
 import CarouselD from "@/components/CarouselDashboard/carouselD";
+import Barchart from "@/components/Charts/barchart";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import prisma from "@/lib/prisma";
+import { Metadata } from "next";
 
 
+export const metadata: Metadata = {
+  title: 'Datos listos'
+}
 
-export default function Home() {
+
+async function fetchingData() {
+
+  const startDate = new Date('2024-05-03')
+  const endDate = new Date('2024-05-03')
+  endDate.setDate(endDate.getDate() + 1)
+
+
+  const data = await prisma.sensordata.findMany({
+    where: {
+      fecha: {
+        gte: startDate,
+        lt: endDate
+      }
+    },
+  })
+
+  console.log(data);
+}
+
+
+export default async function Home() {
+
+  const data = await fetchingData()
+
   return (
     <main className="p-[10px] bg-[#d6d7da]">
       <div className="flex flex-col sm:grid grid-cols-[20%_80%] ">
@@ -14,7 +44,7 @@ export default function Home() {
           <div className="my-2">
             <Select>
               <SelectTrigger>
-                <SelectValue placeholder="Miraflores" />
+                <SelectValue defaultValue={'Miraflores'} defaultChecked />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="Miraflores">Miraflores</SelectItem>
@@ -45,13 +75,15 @@ export default function Home() {
         </section>
         <section className="bg-[#f6f6f8]">
 
-          <Tabs defaultValue="account" >
+          <Tabs defaultValue="Hoy" >
             <TabsList className="flex justify-center m-2">
               <TabsTrigger value="Hoy">Hoy</TabsTrigger>
               <TabsTrigger value="Semana">Semana</TabsTrigger>
             </TabsList>
-            <TabsContent value="account">Make changes to your account here.</TabsContent>
-            <TabsContent value="password">Change your password here.</TabsContent>
+            <TabsContent value="Hoy">
+              <Barchart />
+            </TabsContent>
+            <TabsContent value="Semana">Change your password here.</TabsContent>
           </Tabs>
 
         </section>
