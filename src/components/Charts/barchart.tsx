@@ -1,28 +1,117 @@
-'use client'
-
-import { sensordata } from "@prisma/client";
+"use client"
+import React, { useState } from "react";
 import dynamic from "next/dynamic";
+import { Sensor } from "@/types/sensor";
 
-const ApexChart = dynamic(() => import("react-apexcharts"), { ssr: false });
+const DynamicChart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
 interface Props {
-    data: sensordata
+    categoria: "temperature" | "pm2_5" | "PM10_ug_m3" | "PM1_ug_m3" | "PM100_ug_m3" | "co2_ppm" | "co2_ppb" | "humedad"
+    data: Sensor[];
 }
 
-const Barchart = () => {
+export default function AreaChartOrders({
+    data, categoria
+}: Props) {
+
+    console.log(data);
+    let dataFilter = data.map(item => {
+        if (categoria === "temperature") {
+            return {
+                temperature: item.temperature,
+                todate: item.todate
+            }
+        }
+        if (categoria === "pm2_5") {
+            return {
+                temperature: item.pm2_5,
+                todate: item.todate
+            }
+        }
+        if (categoria === "PM10_ug_m3") {
+            return {
+                temperature: item.pm10,
+                todate: item.todate
+            }
+        }
+        if (categoria === "PM1_ug_m3") {
+            return {
+                temperature: item.pm1,
+                todate: item.todate
+            }
+        }
+        if (categoria === "PM100_ug_m3") {
+            return {
+                temperature: item.pm100,
+                todate: item.todate
+            }
+        }
+        if (categoria === "co2_ppm") {
+            return {
+                temperature: item.co2_ppm,
+                todate: item.todate
+            }
+        }
+        if (categoria === "co2_ppb") {
+            return {
+                temperature: item.co2_ppb,
+                todate: item.todate
+            }
+        }
+        if (categoria === "humedad") {
+            return {
+                temperature: item.humedad,
+                todate: item.todate
+            }
+        }
+    })
+
     return (
-        <ApexChart options={{
-            chart: {
-                id: 'apexchart-example'
-            },
-            xaxis: {
-                categories: [1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999]
-            },
-        }} series={[{
-            name: 'series-1',
-            data: [30, 40, 35, 50, 49, 60, 70, 91, 125]
-        }]} type="bar" width={500} height={320} />
-    )
-}
+        <DynamicChart
+            width={"100%"}
+            height={"100%"}
+            type="area"
+            series={[
+                {
+                    name: categoria,
+                    data: dataFilter.map(item => item?.temperature as number),
+                },
+            ]}
+            options={{
+                markers: {
+                    size: 5,
+                    hover: {
+                        size: 9,
+                    },
+                },
 
-export default Barchart
+                chart: {
+                    type: "area",
+                },
+                colors: ['#000'],
+
+                stroke: {
+                    curve: "straight",
+                },
+                xaxis: {
+                    type: "datetime",
+                    categories: dataFilter.map(
+                        (order) => order!.todate
+                    ),
+                },
+                yaxis: {
+                    labels: {
+                        formatter(val, opts) {
+                            return `${val}`;
+                        },
+                    },
+                },
+                tooltip: {
+                    x: {
+                        format: "dd/MM/yy HH:mm",
+                    },
+                },
+            }}
+        />
+    );
+}

@@ -1,10 +1,13 @@
 
 import CarouselD from "@/components/CarouselDashboard/carouselD";
 import Barchart from "@/components/Charts/barchart";
+import CardsRadial from "@/components/Charts/cardsRadial";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import prisma from "@/lib/prisma";
+import { Sensor } from "@/types/sensor";
+
 import { Metadata } from "next";
+import { Suspense } from "react";
 
 
 export const metadata: Metadata = {
@@ -14,21 +17,22 @@ export const metadata: Metadata = {
 
 async function fetchingData() {
 
-  const startDate = new Date('2024-05-03')
-  const endDate = new Date('2024-05-03')
-  endDate.setDate(endDate.getDate() + 1)
+  const startDate = new Date('2024-04-01T00:00:00.000Z');
+  const endDate = new Date('2024-04-07T23:59:59.999Z');
 
 
-  const data = await prisma.sensordata.findMany({
-    where: {
-      fecha: {
-        gte: startDate,
-        lt: endDate
-      }
-    },
+  const data: Sensor[] = await fetch('https://web-servirce-machine.vercel.app/todo', {
+    method: 'GET',
+  }).then(res => res.json())
+
+
+  const filteredData = data.filter(item => {
+    const date = new Date(item.todate)
+    return date >= startDate && date <= endDate
   })
 
-  console.log(data);
+  // console.log(data);
+  return filteredData
 }
 
 
@@ -39,7 +43,7 @@ export default async function Home() {
   return (
     <main className="p-[10px] bg-[#d6d7da]">
       <div className="flex flex-col sm:grid grid-cols-[20%_80%] ">
-        <section className="p-5 bg-white rounded-[20px_20px_0px_0px] sm:rounded-[20px_0px_0px_20px] ">
+        <div className="p-5 flex-none bg-white rounded-[20px_20px_0px_0px] sm:rounded-[20px_0px_0px_20px] ">
 
           <div className="my-2">
             <Select>
@@ -72,8 +76,9 @@ export default async function Home() {
             <CarouselD />
           </div>
 
-        </section>
-        <section className="bg-[#f6f6f8]">
+
+        </div>
+        <div className="bg-[#f6f6f8]">
 
           <Tabs defaultValue="Hoy" >
             <TabsList className="flex justify-center m-2">
@@ -81,13 +86,54 @@ export default async function Home() {
               <TabsTrigger value="Semana">Semana</TabsTrigger>
             </TabsList>
             <TabsContent value="Hoy">
-              <Barchart />
+
+
+
+              <Tabs defaultValue="Temperatura" className="">
+                <TabsList>
+                  <TabsTrigger value="Temperatura">Temperatura</TabsTrigger>
+                  <TabsTrigger value="pm2_5">pm2_5</TabsTrigger>
+                  <TabsTrigger value="pm10">PM2 10</TabsTrigger>
+                  <TabsTrigger value="pm1">PM2 1</TabsTrigger>
+                  <TabsTrigger value="PM100">PM2 100</TabsTrigger>
+                </TabsList>
+                <TabsContent value="Temperatura">
+
+                  <div className="w-[97%] h-[450px]">
+                    <Barchart data={data} categoria="temperature" />
+                  </div>
+                </TabsContent>
+                <TabsContent value="pm2_5">
+                  <div className="w-[97%] h-[450px]">
+                    <Barchart data={data} categoria="pm2_5" />
+                  </div>
+                </TabsContent>
+                <TabsContent value="pm10">
+                  <div className="w-[97%] h-[450px]">
+                    <Barchart data={data} categoria="PM10_ug_m3" />
+                  </div>
+                </TabsContent>
+                <TabsContent value="pm1">
+                  <div className="w-[97%] h-[450px]">
+                    <Barchart data={data} categoria="PM1_ug_m3" />
+                  </div>
+                </TabsContent>
+                <TabsContent value="PM100">
+                  <div className="w-[97%] h-[450px]">
+                    <Barchart data={data} categoria="PM100_ug_m3" />
+                  </div>
+                </TabsContent>
+              </Tabs>
+
+
             </TabsContent>
-            <TabsContent value="Semana">Change your password here.</TabsContent>
+            <TabsContent value="Semana">Change your PM2_10 here.</TabsContent>
           </Tabs>
 
-        </section>
+        </div>
       </div>
+
     </main>
   );
 }
+
