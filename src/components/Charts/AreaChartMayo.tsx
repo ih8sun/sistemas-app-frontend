@@ -10,61 +10,61 @@ interface Props {
     data: Sensor[];
 }
 
-export default function AreaChartOrders({
+export default function AreaChartMayo({
     data, categoria
 }: Props) {
 
-    console.log('xd', data[0]);
     let dataFilter = data.map(item => {
         if (categoria === "temperature") {
             return {
                 temperature: item.temperature,
-                todate: item.todate
+                todate: new Date(item.todate).toISOString()
             }
         }
         if (categoria === "pm2_5") {
             return {
                 temperature: item.pm2_5,
-                todate: item.todate
+                todate: new Date(item.todate).toISOString()
             }
         }
         if (categoria === "PM10_ug_m3") {
             return {
                 temperature: item.pm10,
-                todate: item.todate
+                todate: new Date(item.todate).toISOString()
             }
         }
         if (categoria === "PM1_ug_m3") {
             return {
                 temperature: item.pm1,
-                todate: item.todate
+                todate: new Date(item.todate).toISOString()
             }
         }
         if (categoria === "PM100_ug_m3") {
             return {
                 temperature: item.pm100,
-                todate: item.todate
+                todate: new Date(item.todate).toISOString()
             }
         }
         if (categoria === "co2_ppm") {
             return {
                 temperature: item.co2_ppm,
-                todate: item.todate
+                todate: new Date(item.todate).toISOString()
             }
         }
         if (categoria === "co2_ppb") {
             return {
                 temperature: item.co2_ppb,
-                todate: item.todate
+                todate: new Date(item.todate).toISOString()
             }
         }
         if (categoria === "humedad") {
             return {
                 temperature: item.humedad,
-                todate: item.todate
+                todate: new Date(item.todate).toISOString()
             }
         }
     })
+
 
     return (
         <DynamicChart

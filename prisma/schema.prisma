@@ -7,7 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
 model MAYO {
   id    Int       @id
   fecha DateTime? @db.Date
@@ -63,4 +62,18 @@ model pruebas {
   temperature Float?    @db.Real
   fecha       DateTime? @db.Date
   hora        DateTime? @db.Time(6)
+}
+
+model mayo_real {
+  id          Int       @id @default(autoincrement())
+  usaqi       Float?    @db.Real
+  co2_ppm     Float?    @db.Real
+  co_ppb      Float?    @db.Real
+  r_humidity  Float?    @db.Real
+  pm2_5       Float?    @db.Real
+  pm10        Float?    @db.Real
+  pm1         Float?    @db.Real
+  pm100       Float?    @db.Real
+  temperature Float?    @db.Real
+  todate      DateTime? @db.Timestamp(6)
 }

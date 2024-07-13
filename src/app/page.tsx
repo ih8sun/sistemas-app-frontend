@@ -32,7 +32,6 @@ async function fetchingData(searchParams: any) {
     method: 'GET',
   }).then(res => res.json())
 
-  console.log('llegue', data);
 
   const filteredData = data.filter(item => {
     const date = new Date(item.todate)
