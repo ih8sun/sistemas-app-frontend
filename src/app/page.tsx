@@ -2,9 +2,12 @@
 import CarouselD from "@/components/CarouselDashboard/carouselD";
 import Barchart from "@/components/Charts/barchart";
 import CardsRadial from "@/components/Charts/cardsRadial";
+import DatePickerSensor from "@/components/DatePicker/DatePicker";
+import { Calendar } from "@/components/ui/calendar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Sensor } from "@/types/sensor";
+import { useSearchParams } from "next/navigation"
 
 import { Metadata } from "next";
 import { Suspense } from "react";
@@ -15,34 +18,40 @@ export const metadata: Metadata = {
 }
 
 
-async function fetchingData() {
+async function fetchingData(searchParams: any) {
 
-  const startDate = new Date('2024-04-01T00:00:00.000Z');
-  const endDate = new Date('2024-04-07T23:59:59.999Z');
+  const [fInicio_anio, fInicio_mes, fInicio_dia] = (searchParams.fechaInicio as string).split('-');;
+  const [fFin_anio, fFin_mes, fFin_dia] = (searchParams.fechaFin as string).split('-');;
+
+  // const startDate = new Date('2024-04-01T00:00:00.000Z');
+  const startDate = new Date(`${fInicio_anio}-${fInicio_mes}-${fInicio_dia}T00:00:00.000Z`);
+  const endDate = new Date(`${fFin_anio}-${fFin_mes}-${fFin_dia}T00:00:00.000Z`);
 
 
   const data: Sensor[] = await fetch('https://web-servirce-machine.vercel.app/todo', {
     method: 'GET',
   }).then(res => res.json())
 
+  console.log('llegue', data);
 
   const filteredData = data.filter(item => {
     const date = new Date(item.todate)
     return date >= startDate && date <= endDate
   })
 
-  // console.log(data);
+  console.log('DATA FILTRADA');
+  console.log(filteredData);
   return filteredData
 }
 
 
-export default async function Home() {
+export default async function Home({ searchParams }: { searchParams: URLSearchParams }) {
 
-  const data = await fetchingData()
+  const data = await fetchingData(searchParams)
 
   return (
     <main className="p-[10px] bg-[#d6d7da]">
-      <div className="flex flex-col sm:grid grid-cols-[20%_80%] ">
+      <div className="flex flex-col sm:grid grid-cols-[30%_70%] ">
         <div className="p-5 flex-none bg-white rounded-[20px_20px_0px_0px] sm:rounded-[20px_0px_0px_20px] ">
 
           <div className="my-2">
@@ -76,6 +85,9 @@ export default async function Home() {
             <CarouselD />
           </div>
 
+          <div className="flex justify-center m-2">
+            <DatePickerSensor />
+          </div>
 
         </div>
         <div className="bg-[#f6f6f8]">
