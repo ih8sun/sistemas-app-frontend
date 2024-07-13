@@ -1,6 +1,5 @@
 'use client'
 
-import { sensordata } from "@prisma/client";
 import dynamic from "next/dynamic";
 
 const ApexChart = dynamic(() => import("react-apexcharts"), { ssr: false });
